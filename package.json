@@ -1,6 +1,7 @@
 {
   "name": "signup-frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "homepage": "https://signup.dirkdev.com",
   "private": true,
   "dependencies": {
     "axios": "^0.26.1",
