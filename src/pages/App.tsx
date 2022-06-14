@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import Register from './Account/Register';
+import Register from './register/Register';
 
 const App = () => {
     return (
