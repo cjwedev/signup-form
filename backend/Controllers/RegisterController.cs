@@ -12,30 +12,30 @@ public class RegisterController : ControllerBase
     [HttpPost(Name = "Register")]
     public IActionResult Post(String firstName, String lastName, String email, String password)
     {
-        List<String> errors = new();
-        if (firstName.Length == 0) errors.Add("No first name entered");
-        else if (firstName.Length < 2) errors.Add("First name too short");
-        else if (firstName.Length > 50) errors.Add("First name too long");
+        Errors errors = new Errors();
+        if (firstName.Length == 0) errors.firstName.Add("No first name entered");
+        else if (firstName.Length < 2) errors.firstName.Add("First name too short");
+        else if (firstName.Length > 50) errors.firstName.Add("First name too long");
 
-        if (lastName.Length == 0) errors.Add("No last name entered");
-        else if (lastName.Length < 2) errors.Add("Last name too short");
-        else if (lastName.Length > 50) errors.Add("Last name too long");
+        if (lastName.Length == 0) errors.lastName.Add("No last name entered");
+        else if (lastName.Length < 2) errors.lastName.Add("Last name too short");
+        else if (lastName.Length > 50) errors.lastName.Add("Last name too long");
 
-        if (email.Length == 0) errors.Add("No email entered");
-        else if (!IsValidEmail(email)) errors.Add("Email is invalid");
-        else if (email.Length > 50) errors.Add("Email too long");
+        if (email.Length == 0) errors.email.Add("No email entered");
+        else if (!IsValidEmail(email)) errors.email.Add("Email is invalid");
+        else if (email.Length > 50) errors.email.Add("Email too long");
 
-        if (password.Length == 0) errors.Add("No password entered");
+        if (password.Length == 0) errors.password.Add("No password entered");
         else
         {
-            if (password.Length < 6) errors.Add("Password not long enough");
-            if (!password.Any(char.IsDigit)) errors.Add("Password doesn't contain a digit");
-            if (!password.Any(char.IsLetter)) errors.Add("Password doesn't contain a letter");
+            if (password.Length < 6) errors.password.Add("Password not long enough");
+            if (!password.Any(char.IsDigit)) errors.password.Add("Password doesn't contain a digit");
+            if (!password.Any(char.IsLetter)) errors.password.Add("Password doesn't contain a letter");
         }
 
-        if (errors.Count > 0)
+        if (errors.firstName.Count + errors.lastName.Count + errors.email.Count + errors.password.Count > 0)
         {
-            return Unauthorized(errors);
+            return Unauthorized(JsonConvert.SerializeObject(errors));
         }
 
         DotNetEnv.Env.Load();
@@ -111,4 +111,12 @@ public class RegisterController : ControllerBase
         }
         return result;
     }
+}
+
+class Errors
+{
+    public List<String> firstName = new();
+    public List<String> lastName = new();
+    public List<String> email = new();
+    public List<String> password = new();
 }
