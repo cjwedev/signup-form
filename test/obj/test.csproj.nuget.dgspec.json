@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\xampp\\htdocs\\signup\\backend\\backend.csproj": {}
+    "D:\\xampp\\htdocs\\signup\\test\\test.csproj": {}
   },
   "projects": {
-    "D:\\xampp\\htdocs\\signup\\backend\\backend.csproj": {
+    "D:\\xampp\\htdocs\\signup\\test\\test.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\xampp\\htdocs\\signup\\backend\\backend.csproj",
-        "projectName": "backend",
-        "projectPath": "D:\\xampp\\htdocs\\signup\\backend\\backend.csproj",
+        "projectUniqueName": "D:\\xampp\\htdocs\\signup\\test\\test.csproj",
+        "projectName": "test",
+        "projectPath": "D:\\xampp\\htdocs\\signup\\test\\test.csproj",
         "packagesPath": "C:\\Users\\Dirk\\.nuget\\packages\\",
-        "outputPath": "D:\\xampp\\htdocs\\signup\\backend\\obj\\",
+        "outputPath": "D:\\xampp\\htdocs\\signup\\test\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Dirk\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -43,22 +43,6 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
-            },
-            "bcrypt.net-next": {
-              "target": "Package",
-              "version": "[4.0.3, )"
-            },
-            "dotnetenv": {
-              "target": "Package",
-              "version": "[2.3.0, )"
-            },
-            "mysql.data": {
-              "target": "Package",
-              "version": "[8.0.29, )"
-            },
-            "newtonsoft.json": {
-              "target": "Package",
-              "version": "[13.0.1, )"
             }
           },
           "imports": [

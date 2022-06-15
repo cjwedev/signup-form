@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="bcrypt.net-next" Version="4.0.3" />
-    <PackageReference Include="dotnetenv" Version="2.3.0" />
-    <PackageReference Include="mysql.data" Version="8.0.29" />
-    <PackageReference Include="newtonsoft.json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
