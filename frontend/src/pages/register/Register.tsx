@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router-dom';
 export default function SignUp() {
     const navigate = useNavigate();
 
-    const [user, setUser] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
     const [passVerify, setPassVerify] = useState("");
 
-    const [userErr, setUserErr] = useState("");
+    const [firstNameErr, setFirstNameErr] = useState("");
+    const [lastNameErr, setLastNameErr] = useState("");
     const [emailErr, setEmailErr] = useState("");
     const [passErr, setPassErr] = useState("");
     const [passVerifyErr, setPassVerifyErr] = useState("");
@@ -20,14 +22,16 @@ export default function SignUp() {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        let userErr = "";
+        let firstNameErr = "";
+        let lastNameErr = "";
         let emailErr = "";
         let passErr = "";
         let passVerifyErr = "";
         let globalErr = "";
 
-        await axios.post(`${process.env.REACT_APP_URL}/api/register`, {
-            user: user,
+        await axios.post(`localhost/register`, {
+            firstName: firstName,
+            lastName: lastName,
             email: email,
             pass: pass,
             passVerify: passVerify
@@ -41,11 +45,11 @@ export default function SignUp() {
                     const data = JSON.parse(res.data.data);
 
                     //Username
-                    if (!data.user.entered) userErr += "Vul een gebruikersnaam in.\n";
+                    if (!data.user.entered) firstNameErr += "Vul een gebruikersnaam in.\n";
                     else {
-                        if (!data.user.unique) userErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
-                        if (!data.user.longEnough) userErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
-                        if (!data.user.notTooLong) userErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
+                        if (!data.user.unique) firstNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
+                        if (!data.user.longEnough) firstNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
+                        if (!data.user.notTooLong) firstNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
                     }
                     //Email
                     if (!data.email.entered) emailErr += "Vul een email-adres in.\n";
@@ -73,15 +77,12 @@ export default function SignUp() {
                 case 200: {
                     console.log(`Account succesvol aangemaakt!`);
                     axios.post(`${process.env.REACT_APP_URL}/api/signIn`, {
-                        user: user,
+                        user: firstName,
                         pass: pass,
                     }).then((res) => {
                         switch (res.data.status) {
                             case 2: {
-                                sessionStorage.setItem('username', user);
-                                sessionStorage.setItem('token', res.data.token);
                                 console.log("Succesvol ingelogd");
-                                navigate("/");
                                 break;
                             }
                             default: {
@@ -104,7 +105,7 @@ export default function SignUp() {
             globalErr = `Ho, er ging iets mis. Sorry! (${res})`;
         });
 
-        setUserErr(userErr);
+        setFirstNameErr(firstNameErr);
         setEmailErr(emailErr);
         setPassErr(passErr);
         setPassVerifyErr(passVerifyErr);
@@ -117,10 +118,16 @@ export default function SignUp() {
                 <h1 className="header">Registreren</h1>
                 <form className="form" onSubmit={handleSubmit}>
                     <label>
-                        Gebruikersnaam:<br></br>
-                        <input type="text" name="user" placeholder="Gebruikersnaam"
-                            onChange={(e) => { setUser(e.target.value); setUserErr("") }} /><br></br>
-                        <span className="error">{userErr}</span>
+                        Voornaam:<br></br>
+                        <input type="text" name="firstName" placeholder="Voornaam"
+                            onChange={(e) => { setFirstName(e.target.value); setFirstNameErr("") }} /><br></br>
+                        <span className="error">{firstNameErr}</span>
+                    </label>
+                    <label>
+                        Achternaam:<br></br>
+                        <input type="text" name="lastName" placeholder="Achternaam"
+                            onChange={(e) => { setLastName(e.target.value); setLastNameErr("") }} /><br></br>
+                        <span className="error">{lastNameErr}</span>
                     </label>
                     <label>
                         Email:<br></br>

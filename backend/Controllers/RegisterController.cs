@@ -2,51 +2,156 @@ using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System.Net.Mail;
+using System.Dynamic;
+using System.Reflection;
 
 namespace backend.Controllers;
+
+// const reqrmts = {
+//         user: {
+//             entered: false,
+//             unique: false,
+//             longEnough: false,
+//             notTooLong: false
+//         },
+//         email: {
+//             entered: false,
+//             unique: false,
+//             valid: false
+//         },
+//         pass: {
+//             entered: false,
+//             longEnough: false,
+//             smallLetter: false,
+//             capitalLetter: false,
+//             number: false,
+//             specialChar: false
+//         },
+//         passVerify: {
+//             entered: false,
+//             equal: false
+//         }
+//     }
+
+class Requirements
+{
+    public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) firstName = (false, false, false);
+    public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) lastName = (false, false, false);
+    public (Boolean Entered, Boolean Unique, Boolean Valid) email = (false, false, false);
+    public (Boolean Entered, Boolean LongEnough, Boolean ContainsNumber, Boolean ContainsLetter) password = (false, false, false, false);
+    public (Boolean Entered, Boolean SameAsPassword) passwordVerify = (false, false);
+    // public class FirstName
+    // {
+    //     public Boolean Entered = false;
+    //     public Boolean LongEnough = false;
+    //     public Boolean NotTooLong = false;
+    // }
+    // public class LastName
+    // {
+    //     public Boolean Entered = false;
+    //     public Boolean LongEnough = false;
+    //     public Boolean NotTooLong = false;
+    // }
+    // public class Email
+    // {
+    //     public Boolean Entered = false;
+    //     public Boolean Unique = false;
+    //     public Boolean Valid = false;
+    // }
+    // public class Password
+    // {
+    //     public Boolean Entered = false;
+    //     public Boolean LongEnough = false;
+    //     public Boolean ContainsNumber = false;
+    //     public Boolean ContainsLetter = false;
+    // }
+    // public class PasswordVerify
+    // {
+    //     public Boolean Entered = false;
+    //     public Boolean SameAsPassword = false;
+    // }
+}
+
 
 [ApiController]
 [Route("[controller]")]
 public class RegisterController : ControllerBase
 {
-    [HttpPost(Name = "Register")]
-    public IActionResult Post(String firstName, String lastName, String email, String password)
+    [HttpPost(Name = "register")]
+    public IActionResult Post(String firstName, String lastName, String email, String password, String passwordVerify)
     {
-        Errors errors = new Errors();
-        if (firstName.Length == 0) errors.firstName.Add("No first name entered");
-        else if (firstName.Length < 2) errors.firstName.Add("First name too short");
-        else if (firstName.Length > 50) errors.firstName.Add("First name too long");
+        MySqlCommand cmd = new();
+        MySqlDataReader reader = null;
 
-        if (lastName.Length == 0) errors.lastName.Add("No last name entered");
-        else if (lastName.Length < 2) errors.lastName.Add("Last name too short");
-        else if (lastName.Length > 50) errors.lastName.Add("Last name too long");
-
-        if (email.Length == 0) errors.email.Add("No email entered");
-        else if (!IsValidEmail(email)) errors.email.Add("Email is invalid");
-        else if (email.Length > 50) errors.email.Add("Email too long");
-
-        if (password.Length == 0) errors.password.Add("No password entered");
-        else
-        {
-            if (password.Length < 6) errors.password.Add("Password not long enough");
-            if (!password.Any(char.IsDigit)) errors.password.Add("Password doesn't contain a digit");
-            if (!password.Any(char.IsLetter)) errors.password.Add("Password doesn't contain a letter");
-        }
-
-        if (errors.firstName.Count + errors.lastName.Count + errors.email.Count + errors.password.Count > 0)
-        {
-            return Unauthorized(JsonConvert.SerializeObject(errors));
-        }
+        Requirements requirements = new();
 
         DotNetEnv.Env.Load();
-        String hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
         String server = Environment.GetEnvironmentVariable("PROJECTS_DB_CONNECTION_SERVER")!;
         String database = Environment.GetEnvironmentVariable("PROJECTS_DB_CONNECTION_DATABASE")!;
         String uid = Environment.GetEnvironmentVariable("PROJECTS_DB_CONNECTION_UID")!;
         String pwd = Environment.GetEnvironmentVariable("PROJECTS_DB_CONNECTION_PWD")!;
         MySqlConnection conn = new($"server={server};database={database};uid={uid};pwd={pwd}");
         conn.Open();
-        MySqlCommand cmd = new("insert into users (`first-name`,`last-name`,email,password) values (@firstName,@lastName,@email,@hash)", conn);
+
+        if (firstName != "")
+        {
+            requirements.firstName.Entered = true;
+            if (firstName.Length > 1) requirements.firstName.LongEnough = true;
+            if (firstName.Length <= 50) requirements.firstName.NotTooLong = true;
+        }
+        if (lastName != "")
+        {
+            requirements.lastName.Entered = true;
+            if (lastName.Length > 1) requirements.lastName.LongEnough = true;
+            if (lastName.Length <= 50) requirements.lastName.NotTooLong = true;
+        }
+        if (email != "")
+        {
+            requirements.email.Entered = true;
+            cmd = new("select * from `users` where email = @email", conn);
+            cmd.Parameters.AddWithValue("@email", email);
+            cmd.Prepare();
+            reader = cmd.ExecuteReader();
+            if (!reader.Read())
+            {
+                requirements.email.Unique = true;
+            }
+            if (IsValidEmail(email)) requirements.email.Valid = true;
+        }
+        if (password != "")
+        {
+            requirements.password.Entered = true;
+            if (password.Length >= 6) requirements.password.LongEnough = true;
+            if (password.Any(char.IsDigit)) requirements.password.ContainsNumber = true;
+            if (password.Any(char.IsLetter)) requirements.password.ContainsLetter = true;
+        }
+        if (passwordVerify != "")
+        {
+            requirements.passwordVerify.Entered = true;
+            if (passwordVerify == password) requirements.passwordVerify.SameAsPassword = true;
+        }
+
+        Boolean allRequirementsMet = true;
+        foreach (FieldInfo field in typeof(Requirements).GetFields())
+        {
+            foreach (FieldInfo subField in field.FieldType.GetFields())
+            {
+                if (!(Boolean)(subField.GetValue(subField))!)
+                {
+                    allRequirementsMet = false;
+                    break;
+                }
+            }
+        }
+
+        if (!allRequirementsMet)
+        {
+            return Unauthorized(JsonConvert.SerializeObject(requirements));
+        }
+
+        String hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+        conn.Open();
+        cmd = new("insert into users (`first-name`,`last-name`,email,password) values (@firstName,@lastName,@email,@hash)", conn);
         cmd.Parameters.AddWithValue("@firstName", firstName);
         cmd.Parameters.AddWithValue("@lastName", lastName);
         cmd.Parameters.AddWithValue("@email", email);
@@ -57,7 +162,7 @@ public class RegisterController : ControllerBase
         cmd = new("select * from `users` where email = @email", conn);
         cmd.Parameters.AddWithValue("@email", email);
         cmd.Prepare();
-        MySqlDataReader reader = cmd.ExecuteReader();
+        reader = cmd.ExecuteReader();
         Boolean success = reader.Read();
         conn.Close();
         if (success)
@@ -111,12 +216,4 @@ public class RegisterController : ControllerBase
         }
         return result;
     }
-}
-
-class Errors
-{
-    public List<String> firstName = new();
-    public List<String> lastName = new();
-    public List<String> email = new();
-    public List<String> password = new();
 }
