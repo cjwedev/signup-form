@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Mail;
 using System.Dynamic;
 using System.Reflection;
@@ -35,41 +36,47 @@ namespace backend.Controllers;
 
 class Requirements
 {
-    public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) firstName = (false, false, false);
-    public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) lastName = (false, false, false);
-    public (Boolean Entered, Boolean Unique, Boolean Valid) email = (false, false, false);
-    public (Boolean Entered, Boolean LongEnough, Boolean ContainsNumber, Boolean ContainsLetter) password = (false, false, false, false);
-    public (Boolean Entered, Boolean SameAsPassword) passwordVerify = (false, false);
-    // public class FirstName
-    // {
-    //     public Boolean Entered = false;
-    //     public Boolean LongEnough = false;
-    //     public Boolean NotTooLong = false;
-    // }
-    // public class LastName
-    // {
-    //     public Boolean Entered = false;
-    //     public Boolean LongEnough = false;
-    //     public Boolean NotTooLong = false;
-    // }
-    // public class Email
-    // {
-    //     public Boolean Entered = false;
-    //     public Boolean Unique = false;
-    //     public Boolean Valid = false;
-    // }
-    // public class Password
-    // {
-    //     public Boolean Entered = false;
-    //     public Boolean LongEnough = false;
-    //     public Boolean ContainsNumber = false;
-    //     public Boolean ContainsLetter = false;
-    // }
-    // public class PasswordVerify
-    // {
-    //     public Boolean Entered = false;
-    //     public Boolean SameAsPassword = false;
-    // }
+    // public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) firstName = (false, false, false);
+    // public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) lastName = (false, false, false);
+    // public (Boolean Entered, Boolean Unique, Boolean Valid) email = (false, false, false);
+    // public (Boolean Entered, Boolean LongEnough, Boolean ContainsNumber, Boolean ContainsLetter) password = (false, false, false, false);
+    // public (Boolean Entered, Boolean SameAsPassword) passwordVerify = (false, false);
+    public FirstName firstName = new();
+    public LastName lastName = new();
+    public Email email = new();
+    public Password password = new();
+    public PasswordVerify passwordVerify = new();
+
+    public class FirstName
+    {
+        public Boolean Entered = false;
+        public Boolean LongEnough = false;
+        public Boolean NotTooLong = false;
+    }
+    public class LastName
+    {
+        public Boolean Entered = false;
+        public Boolean LongEnough = false;
+        public Boolean NotTooLong = false;
+    }
+    public class Email
+    {
+        public Boolean Entered = false;
+        public Boolean Unique = false;
+        public Boolean Valid = false;
+    }
+    public class Password
+    {
+        public Boolean Entered = false;
+        public Boolean LongEnough = false;
+        public Boolean ContainsNumber = false;
+        public Boolean ContainsLetter = false;
+    }
+    public class PasswordVerify
+    {
+        public Boolean Entered = false;
+        public Boolean SameAsPassword = false;
+    }
 }
 
 
@@ -81,7 +88,7 @@ public class RegisterController : ControllerBase
     public IActionResult Post(String firstName, String lastName, String email, String password, String passwordVerify)
     {
         MySqlCommand cmd = new();
-        MySqlDataReader reader = null;
+        MySqlDataReader reader;
 
         Requirements requirements = new();
 
@@ -116,6 +123,7 @@ public class RegisterController : ControllerBase
             {
                 requirements.email.Unique = true;
             }
+            conn.Close();
             if (IsValidEmail(email)) requirements.email.Valid = true;
         }
         if (password != "")
@@ -131,26 +139,29 @@ public class RegisterController : ControllerBase
             if (passwordVerify == password) requirements.passwordVerify.SameAsPassword = true;
         }
 
-        Boolean allRequirementsMet = true;
-        foreach (FieldInfo field in typeof(Requirements).GetFields())
-        {
-            foreach (FieldInfo subField in field.FieldType.GetFields())
-            {
-                if (!(Boolean)(subField.GetValue(subField))!)
-                {
-                    allRequirementsMet = false;
-                    break;
-                }
-            }
-        }
-
-        if (!allRequirementsMet)
+        if (!(
+            requirements.firstName.Entered &&
+            requirements.firstName.LongEnough &&
+            requirements.firstName.NotTooLong &&
+            requirements.lastName.Entered &&
+            requirements.lastName.LongEnough &&
+            requirements.lastName.NotTooLong &&
+            requirements.email.Entered &&
+            requirements.email.Unique &&
+            requirements.email.Valid &&
+            requirements.password.Entered &&
+            requirements.password.ContainsLetter &&
+            requirements.password.ContainsNumber &&
+            requirements.password.LongEnough &&
+            requirements.passwordVerify.Entered &&
+            requirements.passwordVerify.SameAsPassword
+        ))
         {
             return Unauthorized(JsonConvert.SerializeObject(requirements));
         }
 
-        String hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
         conn.Open();
+        String hash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
         cmd = new("insert into users (`first-name`,`last-name`,email,password) values (@firstName,@lastName,@email,@hash)", conn);
         cmd.Parameters.AddWithValue("@firstName", firstName);
         cmd.Parameters.AddWithValue("@lastName", lastName);
