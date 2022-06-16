@@ -1,46 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Net.Mail;
-using System.Dynamic;
-using System.Reflection;
 
 namespace backend.Controllers;
 
-// const reqrmts = {
-//         user: {
-//             entered: false,
-//             unique: false,
-//             longEnough: false,
-//             notTooLong: false
-//         },
-//         email: {
-//             entered: false,
-//             unique: false,
-//             valid: false
-//         },
-//         pass: {
-//             entered: false,
-//             longEnough: false,
-//             smallLetter: false,
-//             capitalLetter: false,
-//             number: false,
-//             specialChar: false
-//         },
-//         passVerify: {
-//             entered: false,
-//             equal: false
-//         }
-//     }
-
 class Requirements
 {
-    // public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) firstName = (false, false, false);
-    // public (Boolean Entered, Boolean LongEnough, Boolean NotTooLong) lastName = (false, false, false);
-    // public (Boolean Entered, Boolean Unique, Boolean Valid) email = (false, false, false);
-    // public (Boolean Entered, Boolean LongEnough, Boolean ContainsNumber, Boolean ContainsLetter) password = (false, false, false, false);
-    // public (Boolean Entered, Boolean SameAsPassword) passwordVerify = (false, false);
     public FirstName firstName = new();
     public LastName lastName = new();
     public Email email = new();
