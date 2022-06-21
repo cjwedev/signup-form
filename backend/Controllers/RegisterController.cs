@@ -15,33 +15,33 @@ class Requirements
 
     public class FirstName
     {
-        public Boolean Entered = false;
-        public Boolean LongEnough = false;
-        public Boolean NotTooLong = false;
+        public Boolean entered = false;
+        public Boolean longEnough = false;
+        public Boolean notTooLong = false;
     }
     public class LastName
     {
-        public Boolean Entered = false;
-        public Boolean LongEnough = false;
-        public Boolean NotTooLong = false;
+        public Boolean entered = false;
+        public Boolean longEnough = false;
+        public Boolean notTooLong = false;
     }
     public class Email
     {
-        public Boolean Entered = false;
-        public Boolean Unique = false;
-        public Boolean Valid = false;
+        public Boolean entered = false;
+        public Boolean unique = false;
+        public Boolean valid = false;
     }
     public class Password
     {
-        public Boolean Entered = false;
-        public Boolean LongEnough = false;
-        public Boolean ContainsNumber = false;
-        public Boolean ContainsLetter = false;
+        public Boolean entered = false;
+        public Boolean longEnough = false;
+        public Boolean containsNumber = false;
+        public Boolean containsLetter = false;
     }
     public class PasswordVerify
     {
-        public Boolean Entered = false;
-        public Boolean SameAsPassword = false;
+        public Boolean entered = false;
+        public Boolean sameAsPassword = false;
     }
 }
 
@@ -65,64 +65,64 @@ public class RegisterController : ControllerBase
         MySqlConnection conn = new($"server={server};database={database};uid={uid};pwd={pwd}");
         conn.Open();
 
-        if (firstName != "")
+        if (!String.IsNullOrEmpty(firstName))
         {
-            requirements.firstName.Entered = true;
-            if (firstName.Length > 1) requirements.firstName.LongEnough = true;
-            if (firstName.Length <= 50) requirements.firstName.NotTooLong = true;
+            requirements.firstName.entered = true;
+            if (firstName.Length > 1) requirements.firstName.longEnough = true;
+            if (firstName.Length <= 50) requirements.firstName.notTooLong = true;
         }
-        if (lastName != "")
+        if (!String.IsNullOrEmpty(lastName))
         {
-            requirements.lastName.Entered = true;
-            if (lastName.Length > 1) requirements.lastName.LongEnough = true;
-            if (lastName.Length <= 50) requirements.lastName.NotTooLong = true;
+            requirements.lastName.entered = true;
+            if (lastName.Length > 1) requirements.lastName.longEnough = true;
+            if (lastName.Length <= 50) requirements.lastName.notTooLong = true;
         }
-        if (email != "")
+        if (!String.IsNullOrEmpty(email))
         {
-            requirements.email.Entered = true;
+            requirements.email.entered = true;
             cmd = new("select * from `users` where email = @email", conn);
             cmd.Parameters.AddWithValue("@email", email);
             cmd.Prepare();
             reader = cmd.ExecuteReader();
             if (!reader.Read())
             {
-                requirements.email.Unique = true;
+                requirements.email.unique = true;
             }
             conn.Close();
-            if (IsValidEmail(email)) requirements.email.Valid = true;
+            if (IsValidEmail(email)) requirements.email.valid = true;
         }
-        if (password != "")
+        if (!String.IsNullOrEmpty(password))
         {
-            requirements.password.Entered = true;
-            if (password.Length >= 6) requirements.password.LongEnough = true;
-            if (password.Any(char.IsDigit)) requirements.password.ContainsNumber = true;
-            if (password.Any(char.IsLetter)) requirements.password.ContainsLetter = true;
+            requirements.password.entered = true;
+            if (password.Length >= 6) requirements.password.longEnough = true;
+            if (password.Any(char.IsDigit)) requirements.password.containsNumber = true;
+            if (password.Any(char.IsLetter)) requirements.password.containsLetter = true;
         }
-        if (passwordVerify != "")
+        if (!String.IsNullOrEmpty(passwordVerify))
         {
-            requirements.passwordVerify.Entered = true;
-            if (passwordVerify == password) requirements.passwordVerify.SameAsPassword = true;
+            requirements.passwordVerify.entered = true;
+            if (passwordVerify == password) requirements.passwordVerify.sameAsPassword = true;
         }
 
         if (!(
-            requirements.firstName.Entered &&
-            requirements.firstName.LongEnough &&
-            requirements.firstName.NotTooLong &&
-            requirements.lastName.Entered &&
-            requirements.lastName.LongEnough &&
-            requirements.lastName.NotTooLong &&
-            requirements.email.Entered &&
-            requirements.email.Unique &&
-            requirements.email.Valid &&
-            requirements.password.Entered &&
-            requirements.password.ContainsLetter &&
-            requirements.password.ContainsNumber &&
-            requirements.password.LongEnough &&
-            requirements.passwordVerify.Entered &&
-            requirements.passwordVerify.SameAsPassword
+            requirements.firstName.entered &&
+            requirements.firstName.longEnough &&
+            requirements.firstName.notTooLong &&
+            requirements.lastName.entered &&
+            requirements.lastName.longEnough &&
+            requirements.lastName.notTooLong &&
+            requirements.email.entered &&
+            requirements.email.unique &&
+            requirements.email.valid &&
+            requirements.password.entered &&
+            requirements.password.containsLetter &&
+            requirements.password.containsNumber &&
+            requirements.password.longEnough &&
+            requirements.passwordVerify.entered &&
+            requirements.passwordVerify.sameAsPassword
         ))
         {
-            return Unauthorized(JsonConvert.SerializeObject(requirements));
+            return Conflict(JsonConvert.SerializeObject(requirements));
         }
 
         conn.Open();
