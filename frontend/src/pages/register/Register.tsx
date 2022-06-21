@@ -29,83 +29,83 @@ export default function SignUp() {
         let passVerifyErr = "";
         let globalErr = "";
 
-        await axios.post(`localhost/register`, {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            pass: pass,
-            passVerify: passVerify
-        }).then((res) => {
-            switch (res.data.status) {
-                case 500: {
-                    globalErr = "Er ging iets fout bij het toevoegen van uw account aan de database. Probeer het later opnieuw.";
-                    break;
-                }
-                case 401: {
-                    const data = JSON.parse(res.data.data);
-
-                    //Username
-                    if (!data.user.entered) firstNameErr += "Vul een gebruikersnaam in.\n";
-                    else {
-                        if (!data.user.unique) firstNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
-                        if (!data.user.longEnough) firstNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
-                        if (!data.user.notTooLong) firstNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
-                    }
-                    //Email
-                    if (!data.email.entered) emailErr += "Vul een email-adres in.\n";
-                    else {
-                        if (!data.email.unique) emailErr += "Er bestaat al een account dat dit email-adres gebruikt.\n";
-                        if (!data.email.valid) emailErr += "Deze email is niet valide\n";
-                    }
-                    //Password
-                    if (!data.pass.entered) passErr += "Vul een wachtwoord in.\n";
-                    else {
-                        if (!data.pass.longEnough) passErr += "Je wachtwoord is niet lang genoeg. Een wachtwoord moet minimaal 8 karakters lang zijn.\n";
-                        if (!data.pass.smallLetter) passErr += "Je wachtwoord moet minimaal 1 kleine letter bevatten.\n";
-                        if (!data.pass.capitalLetter) passErr += "Je wachtwoord moet minimaal 1 hoofdletter bevatten.\n";
-                        if (!data.pass.number) passErr += "Je wachtwoord moet minimaal 1 cijfer bevatten.\n";
-                        if (!data.pass.specialChar) passErr += "Je wachtwoord moet minimaal 1 speciaal karakter bevatten (`!@#$%^&*()_+-=[]{};':\"\\|,.<>/?~).\n";
-                    }
-                    //Password verify
-                    if (!data.passVerify.entered) passVerifyErr += "Vul hetzelfde wachtwoord in als hierboven. Dit is belangrijk zodat u geen typfout maakt in uw wachtwoord.\n";
-                    else {
-                        if (!data.passVerify.equal) passVerifyErr += "Dit wachtwoord is niet gelijk aan het bovenstaande wachtwoord.\n";
-                    }
-
-                    break;
-                }
-                case 200: {
-                    console.log(`Account succesvol aangemaakt!`);
-                    axios.post(`${process.env.REACT_APP_URL}/api/signIn`, {
-                        user: firstName,
-                        pass: pass,
-                    }).then((res) => {
-                        switch (res.data.status) {
-                            case 2: {
-                                console.log("Succesvol ingelogd");
-                                break;
-                            }
-                            default: {
-                                console.log(`Er ging iets mis bij het inloggen. (${res.data.status}`);
-                            }
-                        }
-
-                    }).catch((res) => {
-                        console.log(`Er ging iets mis bij het inloggen. (${res.data.status}`);
-                    });
-                    break;
-                }
-                default: {
-                    globalErr = `Ho, er ging iets mis. Sorry! (${res.data.status})`;
-                    break;
-                }
+        axios.post(`http://localhost:5000/Register`, null, {
+            params: {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: pass,
+                passwordVerify: passVerify
             }
+        }).then(() => {
+            console.log("Account create woo");
+        }).catch(function (error) {
+            if (error.response) {
+                switch (error.response.status) {
+                    case 500: {
+                        globalErr = "Er ging iets fout bij het toevoegen van uw account aan de database. Probeer het later opnieuw.";
+                        break;
+                    }
+                    case 409: {
+                        const data = error.response.data;
 
-        }).catch((res) => {
-            globalErr = `Ho, er ging iets mis. Sorry! (${res})`;
+                        //First name
+                        if (!data.firstName.entered) firstNameErr += "Vul een gebruikersnaam in.\n";
+                        else {
+                            if (!data.firstName.unique) firstNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
+                            if (!data.firstName.longEnough) firstNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
+                            if (!data.firstName.notTooLong) firstNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
+                        }
+                        console.log(firstNameErr);
+                        //Last name
+                        if (!data.lastName.entered) lastNameErr += "Vul een gebruikersnaam in.\n";
+                        else {
+                            if (!data.lastName.unique) lastNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
+                            if (!data.lastName.longEnough) lastNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
+                            if (!data.lastName.notTooLong) lastNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
+                        }
+                        //Email
+                        if (!data.email.entered) emailErr += "Vul een email-adres in.\n";
+                        else {
+                            if (!data.email.unique) emailErr += "Er bestaat al een account dat dit email-adres gebruikt.\n";
+                            if (!data.email.valid) emailErr += "Deze email is niet valide\n";
+                        }
+                        //Password
+                        if (!data.password.entered) passErr += "Vul een wachtwoord in.\n";
+                        else {
+                            if (!data.password.longEnough) passErr += "Je wachtwoord is niet lang genoeg. Een wachtwoord moet minimaal 8 karakters lang zijn.\n";
+                            if (!data.password.smallLetter) passErr += "Je wachtwoord moet minimaal 1 kleine letter bevatten.\n";
+                            if (!data.password.capitalLetter) passErr += "Je wachtwoord moet minimaal 1 hoofdletter bevatten.\n";
+                            if (!data.password.number) passErr += "Je wachtwoord moet minimaal 1 cijfer bevatten.\n";
+                            if (!data.password.specialChar) passErr += "Je wachtwoord moet minimaal 1 speciaal karakter bevatten (`!@#$%^&*()_+-=[]{};':\"\\|,.<>/?~).\n";
+                        }
+                        //Password verify
+                        if (!data.passwordVerify.entered) passVerifyErr += "Vul hetzelfde wachtwoord in als hierboven. Dit is belangrijk zodat u geen typfout maakt in uw wachtwoord.\n";
+                        else {
+                            if (!data.passwordVerify.equal) passVerifyErr += "Dit wachtwoord is niet gelijk aan het bovenstaande wachtwoord.\n";
+                        }
+                        break;
+                    }
+                    case 200: {
+                        console.log(`Account succesvol aangemaakt!`);
+                        break;
+                    }
+                    default: {
+                        globalErr = `Ho, er ging iets mis. Sorry! (${error.response.status})`;
+                        break;
+                    }
+                }
+            } else if (error.request) {
+                console.log(`No response gotten ${error.request}`);
+            } else {
+                console.log('Error', error.message);
+            }
         });
 
+        console.log(firstNameErr);
+
         setFirstNameErr(firstNameErr);
+        setLastNameErr(lastNameErr);
         setEmailErr(emailErr);
         setPassErr(passErr);
         setPassVerifyErr(passVerifyErr);
@@ -120,7 +120,7 @@ export default function SignUp() {
                     <label>
                         Voornaam:<br></br>
                         <input type="text" name="firstName" placeholder="Voornaam"
-                            onChange={(e) => { setFirstName(e.target.value); setFirstNameErr("") }} /><br></br>
+                            onChange={(e) => { setFirstName(e.target.value); }} /><br></br>
                         <span className="error">{firstNameErr}</span>
                     </label>
                     <label>
