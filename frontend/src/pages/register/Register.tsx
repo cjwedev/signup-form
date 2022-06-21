@@ -29,7 +29,7 @@ export default function SignUp() {
         let passVerifyErr = "";
         let globalErr = "";
 
-        axios.post(`http://localhost:5000/Register`, null, {
+        await axios.post(`http://localhost:5000/Register`, null, {
             params: {
                 firstName: firstName,
                 lastName: lastName,
@@ -101,8 +101,6 @@ export default function SignUp() {
                 console.log('Error', error.message);
             }
         });
-
-        console.log(firstNameErr);
 
         setFirstNameErr(firstNameErr);
         setLastNameErr(lastNameErr);
