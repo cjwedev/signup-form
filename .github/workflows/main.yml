@@ -20,6 +20,7 @@ jobs:
       
     - name: Build Frontend
       run: |
+        cd frontend
         npm install
         npm run build
     
@@ -34,6 +35,7 @@ jobs:
       
     - name: Build Backend
       run: |
+        cd ../backend
         dotnet publish --configuration Release -r "linux-x64"
     
     - name: Sync files
