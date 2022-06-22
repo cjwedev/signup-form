@@ -19,6 +19,8 @@ export default function SignUp() {
     const [passVerifyErr, setPassVerifyErr] = useState("");
     const [globalErr, setGlobalErr] = useState("");
 
+    document.title = "Registreren";
+
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
@@ -26,7 +28,7 @@ export default function SignUp() {
         let lastNameErr = "";
         let emailErr = "";
         let passErr = "";
-        let passVerifyErr = "";
+        let passwordVerifyErr = "";
         let globalErr = "";
 
         await axios.post(`http://localhost:5000/Register`, null, {
@@ -38,7 +40,7 @@ export default function SignUp() {
                 passwordVerify: passVerify
             }
         }).then(() => {
-            console.log("Account create woo");
+            navigate("/successful");
         }).catch(function (error) {
             if (error.response) {
                 switch (error.response.status) {
@@ -50,19 +52,16 @@ export default function SignUp() {
                         const data = error.response.data;
 
                         //First name
-                        if (!data.firstName.entered) firstNameErr += "Vul een gebruikersnaam in.\n";
+                        if (!data.firstName.entered) firstNameErr += "Vul een voornaam in.\n";
                         else {
-                            if (!data.firstName.unique) firstNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
-                            if (!data.firstName.longEnough) firstNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
-                            if (!data.firstName.notTooLong) firstNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
+                            if (!data.firstName.longEnough) firstNameErr += "Deze voornaam is niet lang genoeg. Een voornaam moet minimaal 2 karakters lang zijn.\n";
+                            if (!data.firstName.notTooLong) firstNameErr += "Deze voornaam is te lang. Een voornaam kan maximaal 50 karakters lang zijn.\n";
                         }
-                        console.log(firstNameErr);
                         //Last name
-                        if (!data.lastName.entered) lastNameErr += "Vul een gebruikersnaam in.\n";
+                        if (!data.lastName.entered) lastNameErr += "Vul een achternaam in.\n";
                         else {
-                            if (!data.lastName.unique) lastNameErr += "Er bestaat al een gebruiker met deze gebruikersnaam.\n";
-                            if (!data.lastName.longEnough) lastNameErr += "Deze gebruikernaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
-                            if (!data.lastName.notTooLong) lastNameErr += "Deze gebruikernaam is te lang. Een gebruikernaam kan maximaal 35 karakters lang zijn.\n";
+                            if (!data.lastName.longEnough) lastNameErr += "Deze achternaam is niet lang genoeg. Een gebruikernaam moet minimaal 2 karakters lang zijn.\n";
+                            if (!data.lastName.notTooLong) lastNameErr += "Deze achternaam is te lang. Een gebruikernaam kan maximaal 50 karakters lang zijn.\n";
                         }
                         //Email
                         if (!data.email.entered) emailErr += "Vul een email-adres in.\n";
@@ -74,15 +73,13 @@ export default function SignUp() {
                         if (!data.password.entered) passErr += "Vul een wachtwoord in.\n";
                         else {
                             if (!data.password.longEnough) passErr += "Je wachtwoord is niet lang genoeg. Een wachtwoord moet minimaal 8 karakters lang zijn.\n";
-                            if (!data.password.smallLetter) passErr += "Je wachtwoord moet minimaal 1 kleine letter bevatten.\n";
-                            if (!data.password.capitalLetter) passErr += "Je wachtwoord moet minimaal 1 hoofdletter bevatten.\n";
-                            if (!data.password.number) passErr += "Je wachtwoord moet minimaal 1 cijfer bevatten.\n";
-                            if (!data.password.specialChar) passErr += "Je wachtwoord moet minimaal 1 speciaal karakter bevatten (`!@#$%^&*()_+-=[]{};':\"\\|,.<>/?~).\n";
+                            if (!data.password.containsLetter) passErr += "Je wachtwoord moet minimaal 1 letter bevatten.\n";
+                            if (!data.password.containsNumber) passErr += "Je wachtwoord moet minimaal 1 cijfer bevatten.\n";
                         }
                         //Password verify
-                        if (!data.passwordVerify.entered) passVerifyErr += "Vul hetzelfde wachtwoord in als hierboven. Dit is belangrijk zodat u geen typfout maakt in uw wachtwoord.\n";
+                        if (!data.passwordVerify.entered) passwordVerifyErr += "Vul hetzelfde wachtwoord in als hierboven. Dit is belangrijk zodat u geen typfout maakt in uw wachtwoord.\n";
                         else {
-                            if (!data.passwordVerify.equal) passVerifyErr += "Dit wachtwoord is niet gelijk aan het bovenstaande wachtwoord.\n";
+                            if (!data.passwordVerify.sameAsPassword) passwordVerifyErr += "Dit wachtwoord is niet gelijk aan het bovenstaande wachtwoord.\n";
                         }
                         break;
                     }
@@ -106,7 +103,7 @@ export default function SignUp() {
         setLastNameErr(lastNameErr);
         setEmailErr(emailErr);
         setPassErr(passErr);
-        setPassVerifyErr(passVerifyErr);
+        setPassVerifyErr(passwordVerifyErr);
         setGlobalErr(globalErr);
     }
 
@@ -118,7 +115,7 @@ export default function SignUp() {
                     <label>
                         Voornaam:<br></br>
                         <input type="text" name="firstName" placeholder="Voornaam"
-                            onChange={(e) => { setFirstName(e.target.value); }} /><br></br>
+                            onChange={(e) => { setFirstName(e.target.value); setFirstNameErr("") }} /><br></br>
                         <span className="error">{firstNameErr}</span>
                     </label>
                     <label>
