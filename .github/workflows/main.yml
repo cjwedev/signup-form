@@ -35,7 +35,7 @@ jobs:
       
     - name: Build Backend
       run: |
-        cd ~/var_www/signup/backend/
+        cd /home/runner/work/SignUp/SignUp/backend
         dotnet publish --configuration Release -r "linux-x64"
     
     - name: Sync files
