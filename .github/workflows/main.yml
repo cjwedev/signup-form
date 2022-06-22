@@ -31,7 +31,7 @@ jobs:
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/frontend
+        server-dir: var_www/signup/frontend/
       
     - name: Build Backend
       run: |
@@ -45,4 +45,4 @@ jobs:
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/backend
+        server-dir: var_www/signup/backend/
