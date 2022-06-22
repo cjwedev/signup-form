@@ -45,7 +45,6 @@ class Requirements
     }
 }
 
-
 [ApiController]
 [Route("[controller]")]
 public class RegisterController : ControllerBase
@@ -169,28 +168,5 @@ public class RegisterController : ControllerBase
         {
             return false;
         }
-    }
-
-    public static String GetAllData(MySqlDataReader reader)
-    {
-        String result = "";
-
-        List<String> columns = new();
-
-        for (int i = 0; i < reader.FieldCount; i++)
-        {
-            columns.Add(reader.GetName(i));
-        }
-
-        while (reader.Read())
-        {
-            String row = "|";
-            foreach (String column in columns)
-            {
-                row += reader[column] + "|";
-            }
-            result += row + "\n";
-        }
-        return result;
     }
 }
