@@ -18,7 +18,7 @@ jobs:
       with:
         node-version: '14'
       
-    - name: Build Project
+    - name: Build Frontend
       run: |
         npm install
         npm run build
@@ -30,4 +30,17 @@ jobs:
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/
+        server-dir: var_www/signup/frontend
+      
+    - name: Build Backend
+      run: |
+        dotnet publish --configuration Release -r "linux-x64"
+    
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        local-dir: backend/bin/Release/net6.0/linux-x64
+        server: 92.63.169.233
+        username: github
+        password: ${{ secrets.ftp_password }}
+        server-dir: var_www/signup/backend
