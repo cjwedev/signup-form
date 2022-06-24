@@ -41,7 +41,7 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
-        local-dir: backend/bin/Release/net6.0/linux-x64/
+        local-dir: backend/
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
