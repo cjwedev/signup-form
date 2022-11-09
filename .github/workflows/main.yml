@@ -29,7 +29,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         local-dir: frontend/build/
-        server: 92.63.169.233
+        server: sftp://92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/frontend/
@@ -43,7 +43,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         local-dir: backend/
-        server: 92.63.169.233
+        server: sftp://92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/backend/
