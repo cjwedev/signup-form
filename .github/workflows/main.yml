@@ -33,6 +33,7 @@ jobs:
         username: github
         password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/frontend/
+        git-ftp-args: --insecure
       
     - name: Build Backend
       run: |
@@ -47,3 +48,4 @@ jobs:
         username: github
         password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/backend/
+        git-ftp-args: --insecure
