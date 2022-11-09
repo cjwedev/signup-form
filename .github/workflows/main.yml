@@ -26,12 +26,12 @@ jobs:
         npm run build
     
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      uses: SamKirkland/FTP-Deploy-Action@4.1.1
       with:
         local-dir: frontend/build/
-        server: sftp://92.63.169.233
-        username: github
-        password: ${{ secrets.ftp_password }}
+        ftp-server: sftp://92.63.169.233
+        ftp-username: github
+        ftp-password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/frontend/
         git-ftp-args: --insecure
       
@@ -41,11 +41,11 @@ jobs:
         dotnet publish --configuration Release -r "linux-x64"
     
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      uses: SamKirkland/FTP-Deploy-Action@4.1.1
       with:
         local-dir: backend/
-        server: sftp://92.63.169.233
-        username: github
-        password: ${{ secrets.ftp_password }}
+        ftp-server: sftp://92.63.169.233
+        ftp-username: github
+        ftp-password: ${{ secrets.ftp_password }}
         server-dir: var_www/signup/backend/
         git-ftp-args: --insecure
