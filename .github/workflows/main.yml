@@ -32,7 +32,7 @@ jobs:
         ftp-server: sftp://92.63.169.233
         ftp-username: github
         ftp-password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/frontend/
+        entrypoint: var_www/signup/frontend/
         git-ftp-args: --insecure
       
     - name: Build Backend
@@ -47,5 +47,5 @@ jobs:
         ftp-server: sftp://92.63.169.233
         ftp-username: github
         ftp-password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/backend/
+        entrypoint: var_www/signup/backend/
         git-ftp-args: --insecure
