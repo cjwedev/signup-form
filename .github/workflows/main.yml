@@ -26,7 +26,7 @@ jobs:
         npm run build
     
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.1.1
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
         local-dir: frontend/build/
         ftp-server: sftp://92.63.169.233
@@ -41,7 +41,7 @@ jobs:
         dotnet publish --configuration Release -r "linux-x64"
     
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.1.1
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
         local-dir: backend/
         ftp-server: sftp://92.63.169.233
