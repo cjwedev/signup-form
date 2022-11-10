@@ -28,11 +28,11 @@ jobs:
     - name: Sync files
       uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        local-path: frontend/build/*
+        local_path: frontend/build/*
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        remote-path: var_www/signup/
+        remote_path: var_www/signup/
 
     - name: Build Backend
       run: |
@@ -42,8 +42,8 @@ jobs:
     - name: Sync files
       uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        local-path: backend/*
+        local_path: backend/*
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        remote-path: var_www/signup/backend/
+        remote_path: var_www/signup/backend/
