@@ -19,16 +19,31 @@ jobs:
       with:
         node-version: '14'
       
-    - name: Build Project
+    - name: Build Frontend
       run: |
+        cd frontend
         npm install
         npm run build
     
     - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        local-dir: frontend/build/
+        local_path: frontend/build/*
         server: 92.63.169.233
         username: github
         password: ${{ secrets.ftp_password }}
-        server-dir: var_www/signup/
+        remote_path: var_www/signup/
+
+    - name: Build Backend
+      run: |
+        cd /home/runner/work/SignUp/SignUp/backend
+        dotnet publish --configuration Release -r "linux-x64"
+    
+    - name: Sync files
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+        local_path: backend/*
+        server: 92.63.169.233
+        username: github
+        password: ${{ secrets.ftp_password }}
+        remote_path: var_www/signup/backend/
