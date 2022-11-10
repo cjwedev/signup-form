@@ -2,7 +2,7 @@ name: Deploy website on push
 on: 
   push:
     branches:
-    - live
+    - main
   workflow_dispatch:
 jobs:
   web-deploy:
@@ -12,7 +12,7 @@ jobs:
     - name: Get latest code
       uses: actions/checkout@v2
       with: 
-        ref: live
+        ref: main
 
     - name: Use Node.js 14
       uses: actions/setup-node@v2
